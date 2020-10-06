@@ -33,7 +33,8 @@ npm install
 ```
 
 ### Add your MongoDB URL:
-  Change the dbURL on `/config/db.js`
+  This project uses MongoDB Atlas as DB so you need to change the dbURL on `/config/db.js` with your own atlas db.
+  You can create it accesing `https://cloud.mongodb.com/`
 
 ## To run the code in development use:
 ```
