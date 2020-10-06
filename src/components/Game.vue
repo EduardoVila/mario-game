@@ -1,21 +1,31 @@
 <template>
   <div class="game-background">
-    <div class="count">SCORE: {{counter}}</div>
+    <div class="scoreCounter" :class="!started && 'hidden'">SCORE: {{scoreCounter}}</div>
+
+    <Menu :hidden="started" :startGameCallBack="startGame" :scoreCounter="scoreCounter" />
 
     <div class="game-area">
-      <img ref="character" src="../assets/mario.gif" class="character">
-      <img ref="block" src="../assets/goomba.gif" class="block">
+      <img ref="character" src="../assets/gifs/mario.gif" class="character" :class="started && 'started'">
+      <img ref="block" src="../assets/gifs/goomba.gif" class="block" :class="started && 'started'">
     </div>
   </div>
 </template>
 <script>
+
+import Menu from './Menu'
+
 export default {
   data() {
     return {
-      counter: 0,
+      scoreCounter: 0,
       level: 1,
-      oldLevel: 1
+      oldLevel: 1,
+      started: false
     }
+  },
+  
+  components: {
+    Menu
   },
 
   mounted() {
@@ -25,6 +35,7 @@ export default {
 
   updated() {
     this.updateLevel()
+
     if (this.level != this.oldLevel) {
       this.updateAnimationSpeed()
 
@@ -35,20 +46,16 @@ export default {
   methods: {
     checkGameState() {
       setInterval((() => {
+        if (!this.started) return
+        
         const blockXPosition = this.getPosition(this.$refs.block).xPos;
 
         if  (blockXPosition > 200 && blockXPosition < 300 && this.getPosition(this.$refs.character).yPos > 570 ) {
-          console.log(blockXPosition)
-          this.$refs.block.style.animation = 'none'
-
-          alert(`Game Over. score:  ${this.counter}`)
-
-          this.counter = 0
-      } else {
-        this.counter++
-
-        this.updateLevel()
-      }
+          this.started = false
+        } else {
+          this.scoreCounter++
+          this.updateLevel()
+        }
       }).bind(this), 15)
     },
 
@@ -61,52 +68,55 @@ export default {
     },
 
     characterJump() {
-      if (this.$refs.character.classList == 'jump') return
+      if (!this.started || this.$refs.character.classList == 'jump') return
       
       this.$refs.character.classList.add('jump')
-
       setTimeout(() => {
         this.$refs.character.classList.remove('jump')
       }, 300)
     },
 
     updateLevel() {
-      if (this.counter > 1000) {
-        this.level = 2;
-      } else if (this.counter > 2000) {
-        this.level = 3;
-      } else if (this.counter > 3000) {
-        this.level = 4;
+      if (this.scoreCounter > 1000) {
+        this.level = 2
+      } else if (this.scoreCounter > 2000) {
+        this.level = 3
+      } else if (this.scoreCounter > 3000) {
+        this.level = 4
       }
     },
 
     updateAnimationSpeed() {
-      let speed = 0;
+      let speed = 0
 
       if (this.level == 1) {
-        speed = 3;
+        speed = 3
       } else if (this.level == 2) {
-        speed = 2.5;
+        speed = 2.5
       } else if (this.level == 3) {
-        speed = 2;
+        speed = 2
       } else if (this.level == 4) {
-        speed = 1.5
+        speed = 1
       }
       
       const interval = setInterval((() => {
-        if (this.getPosition(this.$refs.block).xPos > -100) return;
+        if (this.getPosition(this.$refs.block).xPos > -100) return
 
         this.$refs.block.style.animationDuration = `${speed}s`
 
         clearInterval(interval)
       }).bind(interval), 5)
     },
-
     getPosition(element) {
       return {
         xPos: element.offsetLeft - element.scrollLeft + element.clientLeft,
         yPos: element.offsetTop - element.scrollTop + element.clientTop
       }
+    },
+    startGame() {
+      this.$refs.block.style.animation = 'none'
+      this.scoreCounter = 0
+      this.started = true
     }
   }
 }
@@ -124,10 +134,10 @@ export default {
     width: 100%;
     height: 100%;
     background-image:
-      url('../assets/ground.png'),
-      url('../assets/sunny.png'),
-      url('../assets/mountains.png'),
-      url('../assets/clouds.png');
+      url('../assets/images/ground.png'),
+      url('../assets/images/sunny.png'),
+      url('../assets/images/mountains.png'),
+      url('../assets/images/clouds.png');
     background-repeat:
       repeat-x,
       no-repeat,
@@ -140,7 +150,7 @@ export default {
       left 0px bottom 0px;
     animation: back 2s infinite linear;
 
-    .count {
+    .scoreCounter {
       position: fixed;
       top: 1.5rem;
       right: 1.5rem;
@@ -159,7 +169,7 @@ export default {
         width: 130px;
         position: relative;
         top: 282px;
-        left: 200px;
+        left: -200px;
       }
 
       .block {
@@ -167,12 +177,21 @@ export default {
         position: relative;
         top: 285px;
         left: 100%;
-        animation: block 3s infinite linear;
+        animation: block 5s 1 linear;
       }
 
       .jump {
         animation: jump 400ms infinite;
         animation-timing-function: ease;
+      }
+
+      .block.started {
+        animation: block 3s infinite linear !important;
+      }
+
+      .character.started {
+        left: 200px;
+        transition: left 1s;
       }
     }
   }
@@ -200,24 +219,21 @@ export default {
       background-position:
         left 0px bottom 0px,
         right 2rem top 3rem,
-        left 0px bottom 
-        $groundHeight,
+        left 0px bottom $groundHeight,
         left 0 top 5rem;
     }
     50% {
       background-position:
         left (-($groundWidth * 12)) bottom 0px,
         right 4rem top 5rem,
-        left (-($mountainsWidth * 0.5)) bottom 
-        $groundHeight - 3,
+        left (-($mountainsWidth * 0.5)) bottom 50px,
         left 0 top 8rem;
     }
     100% {
       background-position:
         left (-($groundWidth * 24)) bottom 0px,
         right 2rem top 3rem,
-        left (-($mountainsWidth * 1)) bottom 
-        $groundHeight,
+        left (-($mountainsWidth * 1)) bottom $groundHeight,
         left 0 top 5rem;
     }
   }

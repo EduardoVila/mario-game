@@ -2,8 +2,9 @@
   padding: 0;
   margin: 0;
   font-family: 'Roboto', Arial, sans-serif;
+  outline: none;
 }
 
-body {
-  background: linear-gradient(#0382FF, #80DFFF);
+.hidden {
+  display: none !important;
 }
