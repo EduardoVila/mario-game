@@ -1,11 +1,11 @@
 const Ranking = require("../models/Ranking")
 
-exports.getAll = (req, res) => {
+exports.getHighestValues = (req, res) => {
   Ranking.find({}, (err, task) => {
     if (err) res.status(500).send(err)
 
     res.status(200).json(task)
-  })
+  }).sort({age:-1}).limit(10)
 }
 
 exports.createNewRanking = (req, res) => {
