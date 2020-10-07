@@ -11,7 +11,7 @@ app.use(bodyParser.json())
 
 app
   .route("/ranking")
-  .get(rankingController.getAll)
+  .get(rankingController.getHighestValues)
   .post(rankingController.createNewRanking)
 
 app.listen(port, () => {
