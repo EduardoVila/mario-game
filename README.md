@@ -2,6 +2,8 @@
 
 This project uses Vue.js and SCSS on the front-end part and Node.js with express and Mongodb on the back-end, after clone the repo remember to setup both applications.
 
+Demo on: `https://edu-mario-game.herokuapp.com/`
+
 ## Setup the front-end application:
 ```
   cd application
