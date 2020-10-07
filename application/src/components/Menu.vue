@@ -11,33 +11,82 @@
         </h1>
       </div>
 
-      <div v-if="scoreCounter > 0" class="menuScoreCounter">YOUR SCORE: {{scoreCounter}}</div>
+      <div v-if="scoreCounter > 0 && currentMenuOption == 'actionButtons'" class="menuScoreCounter">
+        YOUR SCORE: {{scoreCounter}}
+      </div>
 
-      <div class="action-buttons">
-        <button @click="startGameCallBack" class="start-button">{{scoreCounter == 0 ? 'START GAME' : 'TRY AGAIN'}}</button>
+      <div v-if="currentMenuOption == 'actionButtons'" class="action-buttons">
+        <button @click="startGameCallBack" class="start-button">
+          {{scoreCounter == 0 ? 'START GAME' : 'TRY AGAIN'}}
+        </button>
+        <button v-if="scoreCounter > 0 && !saved" @click="currentMenuOption = 'saveResult'" class="start-button">
+          SAVE RESULT
+        </button>
+        <button @click="currentMenuOption = 'ranking'" class="start-button">
+          RANKING
+        </button>
+      </div>
+
+      <div v-if="currentMenuOption == 'ranking'">
+        <Ranking />
+
+        <button @click="currentMenuOption = 'actionButtons'" class="start-button">
+          GO BACK
+        </button>
+      </div>
+
+      <div v-if="currentMenuOption == 'saveResult'">
+        <SaveResult :score="scoreCounter" :onSave="onResultSave"/>
+
+        <button @click="currentMenuOption = 'actionButtons'" class="start-button">
+          GO BACK
+        </button>
       </div>
     </div>
   </div>
 </template>
 <script>
-  export default {
-    props: {
-      scoreCounter: {
-        type: Number,
-        required: true
-      },
+import Ranking from './Ranking'
+import SaveResult from './SaveResult'
 
-      startGameCallBack: {
-        type: Function,
-        required: true
-      },
+export default {
+  data() {
+    return {
+      currentMenuOption: 'actionButtons',
+      saved: false
+    }
+  },
 
-      hidden: {
-        type: Boolean,
-        default: false
-      }
+  props: {
+    scoreCounter: {
+      type: Number,
+      required: true
+    },
+
+    startGameCallBack: {
+      type: Function,
+      required: true
+    },
+
+    hidden: {
+      type: Boolean,
+      default: false
+    }
+  },
+
+  components: {
+    Ranking,
+    SaveResult
+  },
+
+  methods: {
+    onResultSave() {
+      console.log('aqui')
+      this.currentMenuOption = 'actionButtons'
+      this.saved = true
     }
   }
+}
 </script>
 <style lang="scss">
   .menu {
